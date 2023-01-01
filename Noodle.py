@@ -23,20 +23,6 @@ class Noodle(ABC):
         for cord in self.all_tiles[self.rotation]:
             yield Cord(cord.row + self.offset.row, cord.col + self.offset.col)
 
-    def rotateCW(self):
-        self.rotation = (self.rotation + 1) % len(self.all_tiles)
-
-    def rotateCCW(self):
-        self.rotation = (self.rotation - 1) % len(self.all_tiles)
-
-    def move(self, row, col):
-        self.offset.row += row
-        self.offset.col += col
-
-    def reset(self):
-        self.offset.row = 0
-        self.offset.col = 0
-        self.rotation = 0
-
     def __repr__(self):
-        return f"R: {self.rotation} | {list(self.get_tiles())}"
+        return f"{chr(ord('A') + (self.id - 1))}"
+        # R: {self.rotation} | O: {self.offset} |

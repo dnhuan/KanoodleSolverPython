@@ -1,3 +1,4 @@
+from copy import deepcopy
 from NoodleA import NoodleA
 from Cord import Cord
 
@@ -25,17 +26,33 @@ def noodle_does_fit(noodle, grid):
 
 
 def noodle_place(noodle, grid):
+    new_grid = deepcopy(grid)
     for cord in noodle.get_tiles():
-        grid[cord.row][cord.col] = noodle.id
+        new_grid[cord.row][cord.col] = noodle.id
 
-    return grid
+    return new_grid
 
 
-def solve(noodle, grid, rotation=0, offset=Cord(0, 0)):
-    print(noodle, rotation, offset)
+def print_grid(grid):
+    for row in grid:
+        for col in row:
+            if col == 0:
+                print('_', end=' ')
+            elif col == -1:
+                print('*', end=' ')
+            else:
+                print(chr(ord('A') + col-1), end=' ')
+        print()
+    print()
+
+
+def solve(noodle_list, grid, rotation=0, offset=Cord(0, 0)):
+    # print(noodle_list, rotation, offset)
+    # print_grid(grid)
     row, col = offset.row, offset.col
-    # if rotation >= len(noodle.all_tiles) or offset.row >= len(grid) or offset.col >= len(grid[0]):
-    #     return True
+
+    if len(noodle_list) == 0:
+        return grid
 
     if col >= len(grid[0]):
         col = 0
@@ -45,17 +62,18 @@ def solve(noodle, grid, rotation=0, offset=Cord(0, 0)):
         row = 0
         rotation += 1
 
-    if noodle_does_fit(NoodleA(rotation, Cord(row, col)), grid):
-        print('fit')
-        grid = noodle_place(NoodleA(rotation, Cord(row, col)), grid)
-        print_grid(grid)
-        return True
+    if rotation >= len(noodle_list[0].all_tiles):
+        return []
 
-    solve(noodle, grid, rotation, Cord(row, col+1))
+    NoodleClass = noodle_list[0].__class__
+    if noodle_does_fit(NoodleClass(rotation, Cord(row, col)), grid):
+        # print('fit')
+        new_grid = noodle_place(NoodleClass(rotation, Cord(row, col)), grid)
+        # print_grid(new_grid)
+        res = solve(noodle_list[1:], new_grid, 0, Cord(0, 0))
+        if res:
+            return res
 
-
-def print_grid(grid):
-    for row in grid:
-        for col in row:
-            print(col, end=' ')
-        print()
+    res = solve(noodle_list, grid, rotation, Cord(row, col+1))
+    if res:
+        return res
