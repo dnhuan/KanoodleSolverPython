@@ -76,7 +76,7 @@ def get_noodle_list(grid):
     for k in noodle_dict:
         if k not in flattened_grid:
             noodle_list.append(noodle_dict[k])
-
+    noodle_list.sort(key=lambda x: x.get_space(), reverse=True)
     return noodle_list
 
 
@@ -100,18 +100,21 @@ def dfs(y, x, grid):
 
 
 def space_left(original_grid, noodle_list) -> bool:
-    print(noodle_list)
+    # print(noodle_list)
+    if not noodle_list:
+        return True
+
     grid = deepcopy(original_grid)
-    space_left_list = []
+    # space_left_list = []
     for row in range(len(grid)):
         for col in range(len(grid[0])):
             if grid[row][col] == 0:
                 count = dfs(row, col, grid)
                 if count <= 2:
                     return False
-                space_left_list.append(count)
+                # space_left_list.append(count)
 
-    print(space_left_list)
+    # print(space_left_list)
 
     # space_noodle_list = []
     # for noodle in noodle_list:
@@ -121,40 +124,30 @@ def space_left(original_grid, noodle_list) -> bool:
     return True
 
 
-def solve(noodle_list, grid, rotation=0, offset=Cord(-1, -1)):
+def solve(noodle_list, grid):
     # print(noodle_list, rotation, offset)
     # print_grid(grid)
-    row, col = offset.row, offset.col
-
     if len(noodle_list) == 0:
         # print('solved')
+        print_grid(grid)
         return grid
 
-    if col >= len(grid[0]):
-        col = -1
-        row += 1
+    for rotation in range(len(noodle_list[0].all_tiles)):
+        for row in range(-1, len(grid)):
+            for col in range(-1, len(grid[0])):
+                NoodleClass = noodle_list[0].__class__
+                if noodle_does_fit(NoodleClass(rotation, Cord(row, col)), grid):
+                    # print('fit')
+                    new_grid = noodle_place(NoodleClass(
+                        rotation, Cord(row, col)), grid)
+                    new_noodle_list = noodle_list[1:]
+                    if space_left(new_grid, new_noodle_list):
 
-    if row >= len(grid):
-        row = -1
-        rotation += 1
+                        # print(noodle_list)
+                        # print_grid(new_grid)
 
-    if rotation >= len(noodle_list[0].all_tiles):
-        return []
+                        res = solve(new_noodle_list, new_grid)
+                        # if res:
+                        #     return res
 
-    NoodleClass = noodle_list[0].__class__
-    if noodle_does_fit(NoodleClass(rotation, Cord(row, col)), grid):
-        # print('fit')
-        new_grid = noodle_place(NoodleClass(rotation, Cord(row, col)), grid)
-        new_noodle_list = noodle_list[1:]
-        if space_left(new_grid, new_noodle_list):
-
-            # print(noodle_list)
-            # print_grid(new_grid)
-
-            res = solve(new_noodle_list, new_grid)
-            if res:
-                return res
-
-    res = solve(noodle_list, grid, rotation, Cord(row, col+1))
-    if res:
-        return res
+    return []

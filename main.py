@@ -1,4 +1,4 @@
-#!python3
+#!/usr/bin/python3
 from Grid import *
 import sys
 sys.setrecursionlimit(10**7)
