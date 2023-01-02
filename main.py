@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-from Grid import *
-import sys
-sys.setrecursionlimit(10**7)
+from Grid import preprocess_grid, get_noodle_list, print_grid, solve
 
 if __name__ == '__main__':
     raw_grid = [['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],

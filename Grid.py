@@ -1,6 +1,6 @@
 from copy import deepcopy
 from Noodle import *
-from Cord import Cord
+from subsetsum import space_satisfies
 
 
 def noodle_move(noodle, row, col):
@@ -105,23 +105,22 @@ def space_left(original_grid, noodle_list) -> bool:
         return True
 
     grid = deepcopy(original_grid)
-    # space_left_list = []
+    space_left_list = []
     for row in range(len(grid)):
         for col in range(len(grid[0])):
             if grid[row][col] == 0:
                 count = dfs(row, col, grid)
                 if count <= 2:
                     return False
-                # space_left_list.append(count)
+                space_left_list.append(count)
 
-    # print(space_left_list)
+    space_noodle_list = []
+    for noodle in noodle_list:
+        space_noodle_list.append(noodle.get_space())
 
-    # space_noodle_list = []
-    # for noodle in noodle_list:
-    #     space_noodle_list.append(noodle.get_space())
+    return space_satisfies(space_noodle_list, space_left_list)
 
-    # return sorted(space_noodle_list) == sorted(space_left_list)  # 34s
-    return True
+# 71s
 
 
 def solve(noodle_list, grid):
